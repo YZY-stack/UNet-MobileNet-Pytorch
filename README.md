@@ -7,7 +7,6 @@ Glone this repo//
 //Create an environment and run:
 
 `pip install -r requirements.txt`
-// predict or train
 
 ### Prediction
 

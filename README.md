@@ -1,5 +1,14 @@
 # UNet-MobileNet-Pytorch
 
+### How to run
+1. glone this repo
+2. download the pretrained model and dataset from my baidunetdisk below
+3. put them into the project content
+4. create an environment and run:
+
+`pip install -r requirements.txt`
+5. predict or train
+
 ### Prediction
 
 To predict a single image and save it:
@@ -45,13 +54,6 @@ You can visualize in real time the train and test losses, the weights and gradie
 `tensorboard --logdir=runs`
 
 You can find a reference training run with the Caravana dataset on [TensorBoard.dev](https://tensorboard.dev/experiment/1m1Ql50MSJixCbG1m9EcDQ/#scalars&_smoothingWeight=0.6) (only scalars are shown currently).
-
-## Notes on memory
-
-The model has be trained from scratch on a GTX970M 3GB.
-Predicting images of 1918*1280 takes 1.5GB of memory.
-Training takes much approximately 3GB, so if you are a few MB shy of memory, consider turning off all graphical displays.
-This assumes you use bilinear up-sampling, and not transposed convolution in the model.
 
 ## Reference
 https://github.com/milesial/Pytorch-UNet

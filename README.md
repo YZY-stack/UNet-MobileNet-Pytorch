@@ -1,13 +1,13 @@
 # UNet-MobileNet-Pytorch
 
 ### How to run
-Glone this repo
-Download the pretrained model and dataset from my baidunetdisk below
-Put them into the project content
-Create an environment and run:
+Glone this repo//
+//Download the pretrained model and dataset from my baidunetdisk below
+//Put them into the project content
+//Create an environment and run:
 
 `pip install -r requirements.txt`
-5. predict or train
+// predict or train
 
 ### Prediction
 

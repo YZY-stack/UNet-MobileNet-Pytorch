@@ -21,7 +21,7 @@ from torch.utils.data import DataLoader, random_split
 # 输入图片和标签的路径
 dir_img = 'data/liver/liver/train'
 dir_mask = 'data/liver/liver/masks'
-dir_checkpoint = 'data/checkpoints'
+dir_checkpoint = 'data/liver/checkpoints'
 
 
 def train_net(net,
@@ -37,10 +37,13 @@ def train_net(net,
     n_val = int(len(dataset) * val_percent)
     n_train = len(dataset) - n_val
     train, val = random_split(dataset, [n_train, n_val])
-    train_loader = DataLoader(train, batch_size=batch_size, shuffle=True, num_workers=0)
-    val_loader = DataLoader(val, batch_size=batch_size, shuffle=False, num_workers=0, drop_last=True)
+    train_loader = DataLoader(
+        train, batch_size=batch_size, shuffle=True, num_workers=0)
+    val_loader = DataLoader(val, batch_size=batch_size,
+                            shuffle=False, num_workers=0, drop_last=True)
 
-    writer = SummaryWriter(comment=f'LR_{lr}_BS_{batch_size}_SCALE_{img_scale}')
+    writer = SummaryWriter(
+        comment=f'LR_{lr}_BS_{batch_size}_SCALE_{img_scale}')
     global_step = 0
 
     logging.info(f'''Starting training:
@@ -54,8 +57,10 @@ def train_net(net,
         Images scaling:  {img_scale}
     ''')
     # 定义优化器
-    optimizer = optim.RMSprop(net.parameters(), lr=lr, weight_decay=1e-8, momentum=0.9)
-    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min' if net.num_classes > 1 else 'max', patience=2)
+    optimizer = optim.RMSprop(net.parameters(), lr=lr,
+                              weight_decay=1e-8, momentum=0.9)
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer, 'min' if net.num_classes > 1 else 'max', patience=2)
 
     # 定义损失函数，类别大于1使用交叉熵，否则使用BCE
     if net.num_classes > 1:
@@ -97,33 +102,39 @@ def train_net(net,
                 if global_step % (n_train // (10 * batch_size)) == 0:
                     for tag, value in net.named_parameters():
                         tag = tag.replace('.', '/')
-                        writer.add_histogram('weights/' + tag, value.data.cpu().numpy(), global_step)
+                        writer.add_histogram(
+                            'weights/' + tag, value.data.cpu().numpy(), global_step)
                         # writer.add_histogram('grads/' + tag, value.grad.data.cpu().numpy(), global_step)
                     val_score = eval_net(net, val_loader, device)
                     scheduler.step(val_score)
-                    writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], global_step)
+                    writer.add_scalar(
+                        'learning_rate', optimizer.param_groups[0]['lr'], global_step)
 
                     if net.num_classes > 1:
-                        logging.info('Validation cross entropy: {}'.format(val_score))
+                        logging.info(
+                            'Validation cross entropy: {}'.format(val_score))
                         writer.add_scalar('Loss/test', val_score, global_step)
                     else:
-                        logging.info('Validation Dice Coeff: {}'.format(val_score))
+                        logging.info(
+                            'Validation Dice Coeff: {}'.format(val_score))
                         writer.add_scalar('Dice/test', val_score, global_step)
 
                     writer.add_images('images', imgs, global_step)
                     if net.num_classes == 1:
-                        writer.add_images('masks/true', true_masks, global_step)
-                        writer.add_images('masks/pred', torch.sigmoid(masks_pred) > 0.5, global_step)
+                        writer.add_images(
+                            'masks/true', true_masks, global_step)
+                        writer.add_images(
+                            'masks/pred', torch.sigmoid(masks_pred) > 0.5, global_step)
 
         # 保存模型
-        if save_cp:
+        if save_cp and (not epoch%10):
             try:
                 os.mkdir(dir_checkpoint)
                 logging.info('Created checkpoint directory')
             except OSError:
                 pass
             torch.save(net.state_dict(),
-                       dir_checkpoint + f'MobileNet_UNet_epoch{epoch + 1}.pt')
+                       os.path.join(dir_checkpoint, f'MobileNet_UNet_epoch{epoch + 1}.pt'))
             logging.info(f'Checkpoint {epoch + 1} saved !')
 
     writer.close()
@@ -149,7 +160,8 @@ def get_args():
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
+    logging.basicConfig(level=logging.INFO,
+                        format='%(levelname)s: %(message)s')
     args = get_args()
 
     # 判断是否使用GPU训练
@@ -171,7 +183,8 @@ if __name__ == '__main__':
         model_path = args.load
         pretrained_dict = torch.load(model_path, map_location=device)
         # 筛除不加载的层结构
-        pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
+        pretrained_dict = {k: v for k,
+                           v in pretrained_dict.items() if k in model_dict}
         # 更新当前网络的结构字典
         model_dict.update(pretrained_dict)
         net.load_state_dict(model_dict)

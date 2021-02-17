@@ -19,9 +19,9 @@ from utils.dataset import BasicDataset
 from torch.utils.data import DataLoader, random_split
 
 # 输入图片和标签的路径
-dir_img = 'data/liver/liver/imgs/'
-dir_mask = 'data/liver/liver/masks/'
-dir_checkpoint = 'checkpoints/'
+dir_img = 'data/liver/liver/train'
+dir_mask = 'data/liver/liver/masks'
+dir_checkpoint = 'data/checkpoints'
 
 
 def train_net(net,

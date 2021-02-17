@@ -1,4 +1,4 @@
-from os.path import splitext
+from os.path import join, splitext
 from os import listdir
 import numpy as np
 from glob import glob
@@ -6,6 +6,7 @@ import torch
 from torch.utils.data import Dataset
 import logging
 from PIL import Image
+from os.path import join as opj
 
 
 class BasicDataset(Dataset):
@@ -44,8 +45,8 @@ class BasicDataset(Dataset):
 
     def __getitem__(self, i):
         idx = self.ids[i]
-        mask_file = glob(self.masks_dir + idx + "_mask" + '.*') # self.mask_suffix
-        img_file = glob(self.imgs_dir + idx + '.*')
+        mask_file = glob(opj(self.masks_dir,idx+"_mask.*"))  # self.mask_suffix
+        img_file = glob(opj(self.imgs_dir , idx + '.*'))
 
         assert len(mask_file) == 1, \
             f'Either no mask or multiple masks found for the ID {idx}: {mask_file}'
